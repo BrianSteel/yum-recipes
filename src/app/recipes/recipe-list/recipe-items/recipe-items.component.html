@@ -1,0 +1,13 @@
+<a style="cursor:pointer; text-decoration:none;" class="list-group-item clearfix p-4 mx-auto" [routerLink]="[index]"
+    routerLinkActive="active">
+    <div class="row">
+        <div class="col-sm-12">
+            <img [src]="recipeItem.imgPath" alt="{{ recipeItem.name }}" class="img-responsive img-thumbnail"
+                style="max-height: 50px;">
+            <h4 class="list-group-item-heading my-2">
+                {{ recipeItem.name }}
+            </h4>
+        </div>
+        <p class="list-group-item-text">{{ recipeItem.desc }}</p>
+    </div>
+</a>

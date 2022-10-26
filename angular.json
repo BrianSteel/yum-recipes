@@ -24,9 +24,13 @@
               "src/assets"
             ],
             "styles": [
+              "../practise-one/node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              //"../practise-one/node_modules/jquery/dist/jquery.js",
+              //"../practise-one/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ]
           },
           "configurations": {
             "production": {
