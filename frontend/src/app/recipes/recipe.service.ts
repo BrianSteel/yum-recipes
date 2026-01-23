@@ -19,7 +19,7 @@ export class RecipeService {
 
     constructor(private slService: ShoppingListService, private http: HttpClient){}
     getRecipes(){
-        this.http.get<{ message: string, recipes: any}>('http://localhost:3000/api/recipes')
+        this.http.get<{ message: string, recipes: any}>('/api/recipes')
         .pipe(map(recipeData => {
             return recipeData.recipes.map( recipe => {
                 return {
@@ -46,14 +46,14 @@ export class RecipeService {
     }
 
     addRecipe( recipe: Recipe) {
-        this.http.post<{message: string}>('http://localhost:3000/api/recipes', recipe).subscribe(()=> {
+        this.http.post<{message: string}>('/api/recipes', recipe).subscribe(()=> {
         this.Recipes.push(recipe)
         this.recipesChanged.next(this.Recipes.slice())
         })
     }
 
     updateRecipe( index: number, new_recipe: Recipe ){
-        this.http.put<{message: string}>('http://localhost:3000/api/recipe', new_recipe).subscribe((data) => {
+        this.http.put<{message: string}>('/api/recipe', new_recipe).subscribe((data) => {
             console.log(data)
             this.Recipes[index] = new_recipe;
             this.recipesChanged.next(this.Recipes.slice())
