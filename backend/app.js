@@ -1,15 +1,7 @@
 const express = require('express');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const app = express();
-
-mongoose.connect('mongodb://localhost/recipeApp', {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-    console.log("MongoDb connected")
-});
-
 
 const RecipeModel = require('./models/schema')
 
@@ -22,7 +14,7 @@ app.use((req, res, next) => {
 
 app.use(express.json())
 
-app.post('/api/recipes', (req, res, next)=> {
+app.post('/api/recipes', (req, res, next) => {
     const recipe = new RecipeModel({
         name: req.body.name,
         description: req.body.desc,
@@ -36,12 +28,12 @@ app.post('/api/recipes', (req, res, next)=> {
 })
 
 app.get('/api/recipes', (req, res, next) => {
-    RecipeModel.find().then( docs => {
+    RecipeModel.find().then(docs => {
         res.status(201).json({
-            message: "Success", 
+            message: "Success",
             recipes: docs,
         })
-    }).catch( (e) => {
+    }).catch((e) => {
         console.log("Error fetching recipes: ", e)
     })
 })
@@ -53,20 +45,16 @@ app.put('/api/recipe', (req, res, next) => {
         imagePath: req.body.imgPath,
         ingredients: req.body.ingredients,
     }
-    console.log(newRecipe)
     RecipeModel.findByIdAndUpdate(req.body.id, newRecipe, (err, docs) => {
-        if(err){
-            console.log("Error fetching recipes: ", e)
+        if (err) {
+            console.log("Error updating recipe: ", err)
         } else {
-            console.log(docs)
             res.status(201).json({
-                message: "Success", 
+                message: "Success",
                 recipes: docs,
             })
         }
     })
 })
 
-
 module.exports = app;
-
