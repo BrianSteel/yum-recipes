@@ -1,0 +1,50 @@
+services:
+  mongo-dev:
+    image: mongo:5
+    container_name: project-yum-mongo-dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-dev-data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: project-yum-backend-dev
+    env_file:
+      - ./backend/config/.env.dev
+    volumes:
+      - ./backend:/app        # mount source code live — changes reflect without rebuild
+      - /app/node_modules     # protect container's Linux node_modules from being overwritten
+                              # by the mount above (local macOS node_modules are incompatible)
+    depends_on:
+      - mongo-dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: project-yum-frontend-dev
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app       # mount source code live — changes reflect without rebuild
+      - /app/node_modules     # protect container's Linux node_modules from being overwritten
+                              # by the mount above (local macOS node_modules are incompatible)
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: project-yum-nginx-dev
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  mongo-dev-data:
