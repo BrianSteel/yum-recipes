@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: foodify-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    branch: ganymed
+    envVars:
+      - key: NODE_ENV
+        value: prod
+      - key: PORT
+        value: 3000
+      - key: MONGO_URI
+        fromDatabase:
+          name: foodify-mongo
+          property: connectionString
