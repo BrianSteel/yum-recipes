@@ -12,19 +12,29 @@ import { RecipeService } from '../recipe.service';
 export class RecipeDetailComponent implements OnInit, OnDestroy {
 
   recipe: Recipe;
+  notFound = false;
   id: number;
   paramsSubscription: Subscription;
+  recipesSubscription: Subscription;
+
   constructor(private recipeService: RecipeService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
-    this.paramsSubscription = this.route.params.subscribe( (params: Params) => {
+    this.paramsSubscription = this.route.params.subscribe((params: Params) => {
       this.id = +params.id;
-      this.recipe = this.recipeService.getRecipeByID(this.id)
-    })
+      this.recipe = this.recipeService.getRecipeByID(this.id);
+    });
+
+    // When recipes load from API, re-fetch the current recipe by id
+    this.recipesSubscription = this.recipeService.recipesChanged.subscribe(() => {
+      this.recipe = this.recipeService.getRecipeByID(this.id);
+      this.notFound = !this.recipe;
+    });
   }
 
   ngOnDestroy(){
     this.paramsSubscription.unsubscribe();
+    this.recipesSubscription.unsubscribe();
   }
 
   onAddToShoppingList(){

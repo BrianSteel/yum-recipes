@@ -1,13 +1,9 @@
-<a style="cursor:pointer; text-decoration:none;" class="list-group-item clearfix p-4 mx-auto" [routerLink]="[index]"
-    routerLinkActive="active">
-    <div class="row">
-        <div class="col-sm-12">
-            <img [src]="recipeItem.imgPath" alt="{{ recipeItem.name }}" class="img-responsive img-thumbnail"
-                style="max-height: 50px;">
-            <h4 class="list-group-item-heading my-2">
-                {{ recipeItem.name }}
-            </h4>
+<a style="cursor:pointer; text-decoration:none;" class="list-group-item list-group-item-action p-3" [routerLink]="[index]" routerLinkActive="active">
+    <div class="d-flex gap-3 align-items-center">
+        <img [src]="recipeItem.imgPath" alt="{{ recipeItem.name }}" class="rounded" style="width: 72px; height: 72px; object-fit: cover;">
+        <div>
+            <h6 class="mb-1 fw-semibold">{{ recipeItem.name }}</h6>
+            <p class="mb-0 text-muted small">{{ recipeItem.desc }}</p>
         </div>
-        <p class="list-group-item-text">{{ recipeItem.desc }}</p>
     </div>
 </a>

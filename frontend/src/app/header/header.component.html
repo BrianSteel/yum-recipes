@@ -1,28 +1,16 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid" [appDropdown]="2">
-        <div class="navbar-header">
-            <a routerLink="/recipe" class="navbar-brand">Recipe Book</a>
-        </div>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
-            aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item" routerLinkActive="active"><a class="nav-link" routerLink="/recipe">Recipes</a></li>
-                <li class="nav-item" routerLinkActive="active"><a class="nav-link" routerLink="/shopping-list">Shopping List</a></li>
-            </ul>
-            <ul class="navbar-nav">
-                <li class="nav-item active dropdown" [appDropdown]="1">
-                    <a class="nav-link dropdown-toggle" style="cursor: pointer;">Manage
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" style="cursor: pointer;">Save Data</a></li>
-                        <li><a class="dropdown-item" style="cursor: pointer;">Fetch Data</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <a routerLink="/recipe" class="navbar-brand fw-semibold">Yum Recipes</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link" routerLink="/recipe">Recipes</a>
+            </li>
+            <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link" routerLink="/shopping-list">Shopping List</a>
+            </li>
+        </ul>
     </div>
 </nav>
