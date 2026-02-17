@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const app = express();
 
 const RecipeModel = require('./models/schema')
+const ShoppingListModel = require('./models/shoppingListSchema')
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -55,6 +56,38 @@ app.put('/api/recipe', (req, res, next) => {
             })
         }
     })
+})
+
+app.get('/api/shopping-list', (req, res) => {
+    ShoppingListModel.find().then(docs => {
+        res.status(200).json({ message: 'Success', ingredients: docs })
+    }).catch(e => console.log('Error fetching shopping list:', e))
+})
+
+app.post('/api/shopping-list', (req, res) => {
+    const ingredient = new ShoppingListModel({
+        name: req.body.name,
+        amount: req.body.amount
+    });
+    ingredient.save().then(doc => {
+        res.status(201).json({ message: 'Success', ingredient: doc })
+    }).catch(e => console.log('Error saving ingredient:', e))
+})
+
+app.put('/api/shopping-list/:id', (req, res) => {
+    ShoppingListModel.findByIdAndUpdate(
+        req.params.id,
+        { name: req.body.name, amount: req.body.amount },
+        { new: true }
+    ).then(doc => {
+        res.status(200).json({ message: 'Success', ingredient: doc })
+    }).catch(e => console.log('Error updating ingredient:', e))
+})
+
+app.delete('/api/shopping-list/:id', (req, res) => {
+    ShoppingListModel.findByIdAndDelete(req.params.id)
+        .then(() => res.status(200).json({ message: 'Success' }))
+        .catch(e => console.log('Error deleting ingredient:', e))
 })
 
 module.exports = app;
