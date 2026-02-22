@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "../dist-e2e"
+  },
+  "include": ["tests/**/*.ts", "playwright.config.ts"]
+}
