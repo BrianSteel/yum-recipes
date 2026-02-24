@@ -24,9 +24,9 @@ afterEach(async () => {
 });
 
 describe('GET /api/recipes', () => {
-    it('should return 201 with empty recipes array when no recipes exist', async () => {
+    it('should return 200 with empty recipes array when no recipes exist', async () => {
         const res = await request(app).get('/api/recipes');
-        expect(res.status).toBe(201);
+        expect(res.status).toBe(200);
         expect(res.body.message).toBe('Success');
         expect(res.body.recipes).toEqual([]);
     });
@@ -41,7 +41,7 @@ describe('GET /api/recipes', () => {
         });
 
         const res = await request(app).get('/api/recipes');
-        expect(res.status).toBe(201);
+        expect(res.status).toBe(200);
         expect(res.body.recipes.length).toBe(1);
         expect(res.body.recipes[0].name).toBe('Test Recipe');
     });

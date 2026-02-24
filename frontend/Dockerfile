@@ -1,14 +1,15 @@
-FROM node:24-alpine AS build
+FROM node:16-alpine AS build
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY frontend/package*.json ./
 RUN npm install
 
-COPY . .
+COPY frontend/ .
 RUN npm run build
 
 FROM nginx:alpine
 COPY --from=build /app/dist/practise-one /usr/share/nginx/html
+COPY nginx/frontend.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80

@@ -46,22 +46,25 @@ export class RecipeService {
     }
 
     addRecipe( recipe: Recipe) {
-        this.http.post<{message: string}>('/api/recipes', recipe).subscribe(()=> {
-        this.Recipes.push(recipe)
-        this.recipesChanged.next(this.Recipes.slice())
+        this.http.post<{message: string, recipe: any}>('/api/recipes', recipe).subscribe((data) => {
+            recipe.id = data.recipe._id;
+            this.Recipes.push(recipe);
+            this.recipesChanged.next(this.Recipes.slice());
         })
     }
 
     updateRecipe( index: number, new_recipe: Recipe ){
-        this.http.put<{message: string}>('/api/recipe', new_recipe).subscribe((data) => {
-            console.log(data)
+        this.http.put<{message: string}>(`/api/recipe/${new_recipe.id}`, new_recipe).subscribe(() => {
             this.Recipes[index] = new_recipe;
-            this.recipesChanged.next(this.Recipes.slice())
+            this.recipesChanged.next(this.Recipes.slice());
         })
     }
 
     deleteRecipe( index:number ) {
-        this.Recipes.splice(index, 1);
-        this.recipesChanged.next(this.Recipes.slice());
+        const id = this.Recipes[index].id;
+        this.http.delete(`/api/recipe/${id}`).subscribe(() => {
+            this.Recipes.splice(index, 1);
+            this.recipesChanged.next(this.Recipes.slice());
+        })
     }
 }

@@ -15,22 +15,24 @@ app.use((req, res, next) => {
 
 app.use(express.json())
 
-app.post('/api/recipes', (req, res, next) => {
+app.post('/api/recipes', async (req, res, next) => {
     const recipe = new RecipeModel({
         name: req.body.name,
         description: req.body.desc,
         imagePath: req.body.imgPath,
         ingredients: req.body.ingredients,
     });
-    recipe.save();
-    res.status(201).json({
-        message: 'success'
-    })
+    try {
+        const doc = await recipe.save();
+        res.status(201).json({ message: 'success', recipe: doc })
+    } catch (e) {
+        res.status(500).json({ message: 'Error saving recipe', error: e.message })
+    }
 })
 
 app.get('/api/recipes', (req, res, next) => {
     RecipeModel.find().then(docs => {
-        res.status(201).json({
+        res.status(200).json({
             message: "Success",
             recipes: docs,
         })
@@ -39,23 +41,28 @@ app.get('/api/recipes', (req, res, next) => {
     })
 })
 
-app.put('/api/recipe', (req, res, next) => {
+app.put('/api/recipe/:id', async (req, res, next) => {
     let newRecipe = {
         name: req.body.name,
         description: req.body.desc,
         imagePath: req.body.imgPath,
         ingredients: req.body.ingredients,
     }
-    RecipeModel.findByIdAndUpdate(req.body.id, newRecipe, (err, docs) => {
-        if (err) {
-            console.log("Error updating recipe: ", err)
-        } else {
-            res.status(201).json({
-                message: "Success",
-                recipes: docs,
-            })
-        }
-    })
+    try {
+        const doc = await RecipeModel.findByIdAndUpdate(req.params.id, newRecipe, { new: true });
+        res.status(200).json({ message: "Success", recipe: doc })
+    } catch (e) {
+        res.status(500).json({ message: 'Error updating recipe', error: e.message })
+    }
+})
+
+app.delete('/api/recipe/:id', async (req, res, next) => {
+    try {
+        await RecipeModel.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: 'Success' })
+    } catch (e) {
+        res.status(500).json({ message: 'Error deleting recipe', error: e.message })
+    }
 })
 
 app.get('/api/shopping-list', (req, res) => {

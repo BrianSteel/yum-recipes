@@ -1,27 +1,46 @@
-# Foodify
+# Yum Recipes — Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.4.
+Angular 11 single-page application.
 
-## Development server
+> **Do not run this directly.** Use Docker Compose or Kubernetes from the project root. See the root README.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+---
 
-## Code scaffolding
+## Stack
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- Angular 11
+- Node 16 (required — Angular 11 is incompatible with Node 17+ due to OpenSSL)
 
-## Build
+## Structure
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+```
+src/app/
+├── recipes/           — recipe list, detail, create/edit form
+├── shopping-list/     — shopping list page
+├── header/            — navbar
+└── shared/            — shared models and directives
+```
 
-## Running unit tests
+## Dev (via Docker Compose)
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```bash
+# From project root
+npm run docker:dev
+```
 
-## Running end-to-end tests
+Frontend runs at http://localhost:80 (via Nginx reverse proxy) or http://localhost:4200 (direct).
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+## Production Build (via Kubernetes)
 
-## Further help
+```bash
+# From project root — build context must be root so nginx/frontend.conf is accessible
+docker build -t yum-recipes-frontend:latest -f ./frontend/Dockerfile .
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Nginx Config
+
+In production (Kubernetes), the built Angular app is served by Nginx inside the container. A custom config (`nginx/frontend.conf`) is required to handle Angular client-side routing — without it, routes like `/shopping-list` return 404.
+
+## Note on Protractor
+
+The `frontend/e2e/` folder contains the default Angular CLI Protractor boilerplate. It is unused — all e2e tests are in the root `e2e/` folder using Playwright.
