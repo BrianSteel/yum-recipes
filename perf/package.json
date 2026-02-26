@@ -1,0 +1,11 @@
+{
+  "name": "yum-recipes-perf",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node run-all.js"
+  },
+  "dependencies": {
+    "autocannon": "^7.15.0"
+  }
+}
