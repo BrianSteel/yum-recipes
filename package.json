@@ -1,5 +1,5 @@
 {
-  "name": "foodify",
+  "name": "yum-recipes",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -16,7 +16,18 @@
     "docker:logs:frontend": "docker-compose -f docker-compose.dev.yml logs -f frontend",
     "docker:logs:nginx": "docker-compose -f docker-compose.dev.yml logs -f nginx",
     "seed": "docker-compose -f docker-compose.dev.yml exec backend node migration-scripts/seed.js",
+    "seed:shopping-list": "docker-compose -f docker-compose.dev.yml exec backend node migration-scripts/seed-shopping-list.js",
     "nginx:reload": "docker-compose -f docker-compose.dev.yml exec nginx nginx -s reload",
-    "test:backend": "cd backend && npm test"
+    "test:backend": "cd backend && npm test",
+    "test:e2e": "cd e2e && npm test",
+    "test:e2e:headed": "cd e2e && npm run test:headed",
+    "test:e2e:ui": "cd e2e && npm run test:ui",
+    "test:e2e:install": "cd e2e && npm install && npx playwright install chromium",
+    "test:perf": "cd perf && npm test",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ../e2e && npm install && cd ../perf && npm install",
+    "k8s:traefik": "bash k8s/scripts/deploy-traefik.sh",
+    "k8s:traefik:test": "bash k8s/scripts/deploy-traefik-test.sh",
+    "k8s:nginx": "bash k8s/scripts/deploy-nginx.sh",
+    "k8s:nginx:test": "bash k8s/scripts/deploy-nginx-test.sh"
   }
 }
