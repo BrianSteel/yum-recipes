@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: foodify-backend
+    name: yum-recipes-backend
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
@@ -12,5 +12,5 @@ services:
         value: 3000
       - key: MONGO_URI
         fromDatabase:
-          name: foodify-mongo
+          name: yum-recipes-mongo
           property: connectionString
