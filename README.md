@@ -1,15 +1,22 @@
 # Yum Recipes
 
-A portfolio project demonstrating production-grade patterns I've used professionally — containerisation, orchestration, CI/CD, automated testing and infrastructure-as-code. Built as a simple recipe app to keep the domain logic minimal so the engineering practices are the focus.
+A portfolio project that simulates how I work in production. The domain is intentionally simple (a recipe app) so the focus stays on the engineering practices rather than business logic — the same patterns, tooling and workflows I use day-to-day on real systems.
 
-**This is a demo project, not a production app.** Intentionally not included:
+**This is not a demo or toy app** — it reflects my actual working approach:
+- Containerisation with Docker and Docker Compose
+- Kubernetes orchestration with Kustomize overlays
+- CI/CD with GitHub Actions
+- Automated testing at unit, e2e and performance levels
+- Infrastructure-as-code for all environments
+
+In production I work with Google Cloud (GKE, Cloud Run, etc.). For this simulation, Render and Vercel stand in as the deployment targets to keep the setup self-contained and free — the CI/CD pipeline structure, branching strategy and workflow are the same regardless of where it deploys.
+
+Intentionally out of scope (not because I haven't done it, but because it would add noise without adding signal here):
 - Monitoring / observability (Prometheus, Grafana)
 - Log aggregation (ELK, Loki)
 - Authentication / RBAC
 - Rate limiting
 - HTTPS / TLS certificates
-
-These are areas I have professional experience with but are out of scope for this demo.
 
 ---
 
