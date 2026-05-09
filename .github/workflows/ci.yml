@@ -74,17 +74,6 @@ jobs:
       - name: Start Docker stack
         run: docker compose -f docker-compose.dev.yml up -d --build
 
-      - name: Show Docker logs
-        run: |
-          echo "=== BACKEND ==="
-          docker compose -f docker-compose.dev.yml logs backend
-          echo "=== FRONTEND ==="
-          docker compose -f docker-compose.dev.yml logs frontend
-          echo "=== NGINX ==="
-          docker compose -f docker-compose.dev.yml logs nginx
-          echo "=== MONGO ==="
-          docker compose -f docker-compose.dev.yml logs mongo-dev
-
       - name: Wait for stack to be ready
         run: |
           echo "Waiting for backend API..."
@@ -102,18 +91,26 @@ jobs:
 
       - name: Wait for frontend to be ready
         run: |
-          echo "Waiting for frontend..."
-          for i in $(seq 1 30); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80)
-            if [ "$STATUS" = "200" ]; then
-              echo "Frontend ready (HTTP 200)"
+          echo "Waiting for Angular to compile..."
+          for i in $(seq 1 60); do
+            LOGS=$(docker compose -f docker-compose.dev.yml logs frontend 2>&1)
+            echo "$LOGS" | tail -5
+            if echo "$LOGS" | grep -q "Compiled successfully"; then
+              echo "Angular compiled successfully"
               exit 0
             fi
-            echo "Attempt $i — HTTP $STATUS, retrying..."
+            echo "--- Attempt $i, retrying in 5s..."
             sleep 5
           done
-          echo "Frontend never became ready — aborting"
+          echo "Frontend never compiled — aborting"
           exit 1
+
+      - name: Show Docker logs
+        run: |
+          echo "=== BACKEND ==="
+          docker compose -f docker-compose.dev.yml logs backend
+          echo "=== FRONTEND ==="
+          docker compose -f docker-compose.dev.yml logs frontend
 
       - name: Install Playwright
         working-directory: e2e
