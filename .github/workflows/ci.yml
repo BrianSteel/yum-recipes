@@ -75,7 +75,15 @@ jobs:
         run: docker compose -f docker-compose.dev.yml up -d --build
 
       - name: Show Docker logs
-        run: docker compose -f docker-compose.dev.yml logs
+        run: |
+          echo "=== BACKEND ==="
+          docker compose -f docker-compose.dev.yml logs backend
+          echo "=== FRONTEND ==="
+          docker compose -f docker-compose.dev.yml logs frontend
+          echo "=== NGINX ==="
+          docker compose -f docker-compose.dev.yml logs nginx
+          echo "=== MONGO ==="
+          docker compose -f docker-compose.dev.yml logs mongo-dev
 
       - name: Wait for stack to be ready
         run: |
@@ -90,6 +98,21 @@ jobs:
             sleep 5
           done
           echo "Backend never became ready — aborting"
+          exit 1
+
+      - name: Wait for frontend to be ready
+        run: |
+          echo "Waiting for frontend..."
+          for i in $(seq 1 30); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80)
+            if [ "$STATUS" = "200" ]; then
+              echo "Frontend ready (HTTP 200)"
+              exit 0
+            fi
+            echo "Attempt $i — HTTP $STATUS, retrying..."
+            sleep 5
+          done
+          echo "Frontend never became ready — aborting"
           exit 1
 
       - name: Install Playwright
