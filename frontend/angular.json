@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "practise-one": {
+    "yum-recipes": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/practise-one",
+            "outputPath": "dist/yum-recipes",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -28,8 +28,8 @@
               "src/styles.css"
             ],
             "scripts": [
-              //"../practise-one/node_modules/jquery/dist/jquery.js",
-              //"../practise-one/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+              //"../yum-recipes/node_modules/jquery/dist/jquery.js",
+              //"../yum-recipes/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ]
           },
           "configurations": {
@@ -65,18 +65,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "practise-one:build"
+            "browserTarget": "yum-recipes:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "practise-one:build:production"
+              "browserTarget": "yum-recipes:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "practise-one:build"
+            "browserTarget": "yum-recipes:build"
           }
         },
         "test": {
@@ -113,16 +113,16 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "practise-one:serve"
+            "devServerTarget": "yum-recipes:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "practise-one:serve:production"
+              "devServerTarget": "yum-recipes:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "practise-one"
+  "defaultProject": "yum-recipes"
 }

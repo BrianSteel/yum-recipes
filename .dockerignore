@@ -1,0 +1,5 @@
+node_modules
+frontend/node_modules
+backend/node_modules
+e2e/node_modules
+perf/node_modules

@@ -63,16 +63,8 @@ jobs:
           cache: npm
           cache-dependency-path: e2e/package-lock.json
 
-      - name: Create env file
-        run: |
-          cat > backend/config/.env.dev << 'EOF'
-          NODE_ENV=dev
-          PORT=3000
-          MONGO_URI=mongodb://mongo-dev:27017/project_yum_recipes
-          EOF
-
       - name: Start Docker stack
-        run: docker compose -f docker-compose.dev.yml up -d --build
+        run: docker compose -f docker-compose.ci.yml up -d --build
 
       - name: Wait for stack to be ready
         run: |
@@ -87,30 +79,12 @@ jobs:
             sleep 5
           done
           echo "Backend never became ready — aborting"
-          exit 1
-
-      - name: Wait for frontend to be ready
-        run: |
-          echo "Waiting for Angular to compile..."
-          for i in $(seq 1 60); do
-            LOGS=$(docker compose -f docker-compose.dev.yml logs frontend 2>&1)
-            echo "$LOGS" | tail -5
-            if echo "$LOGS" | grep -q "Compiled successfully"; then
-              echo "Angular compiled successfully"
-              exit 0
-            fi
-            echo "--- Attempt $i, retrying in 5s..."
-            sleep 5
-          done
-          echo "Frontend never compiled — aborting"
+          docker compose -f docker-compose.ci.yml logs
           exit 1
 
       - name: Show Docker logs
-        run: |
-          echo "=== BACKEND ==="
-          docker compose -f docker-compose.dev.yml logs backend
-          echo "=== FRONTEND ==="
-          docker compose -f docker-compose.dev.yml logs frontend
+        if: failure()
+        run: docker compose -f docker-compose.ci.yml logs
 
       - name: Install Playwright
         working-directory: e2e
@@ -130,4 +104,4 @@ jobs:
 
       - name: Tear down Docker stack
         if: always()
-        run: docker compose -f docker-compose.dev.yml down
+        run: docker compose -f docker-compose.ci.yml down
