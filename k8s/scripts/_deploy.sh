@@ -64,7 +64,7 @@ kubectl wait --for=condition=ready pod --selector=app=frontend -n yum-recipes --
 kubectl wait --for=condition=ready pod --selector=app=mongodb -n yum-recipes --timeout=120s
 
 echo ">>> Seeding database..."
-kubectl exec -n yum-recipes deployment/backend -- node migration-scripts/seed.js
+kubectl exec -n yum-recipes deployment/backend -- node migration-scripts/seed-recipes.js
 kubectl exec -n yum-recipes deployment/backend -- node migration-scripts/seed-shopping-list.js
 
 if [ "$TEST" = true ]; then

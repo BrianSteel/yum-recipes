@@ -15,7 +15,7 @@
     "docker:logs:backend": "docker-compose -f docker-compose.dev.yml logs -f backend",
     "docker:logs:frontend": "docker-compose -f docker-compose.dev.yml logs -f frontend",
     "docker:logs:nginx": "docker-compose -f docker-compose.dev.yml logs -f nginx",
-    "seed": "docker-compose -f docker-compose.dev.yml exec backend node migration-scripts/seed.js",
+    "seed:recipes": "docker-compose -f docker-compose.dev.yml exec backend node migration-scripts/seed-recipes.js",
     "seed:shopping-list": "docker-compose -f docker-compose.dev.yml exec backend node migration-scripts/seed-shopping-list.js",
     "nginx:reload": "docker-compose -f docker-compose.dev.yml exec nginx nginx -s reload",
     "test:backend": "cd backend && npm test",
