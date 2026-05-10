@@ -1,5 +1,7 @@
 # Yum Recipes
 
+This branch tests the ci
+
 A portfolio project that simulates how I work in production. The domain is intentionally simple (a recipe app) so the focus stays on the engineering practices rather than business logic — the same patterns, tooling and workflows I use day-to-day on real systems.
 
 **This is not a demo or toy app** — it reflects my actual working approach:

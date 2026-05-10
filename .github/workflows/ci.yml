@@ -52,6 +52,7 @@ jobs:
     name: E2E Checks
     runs-on: ubuntu-latest
     needs: [backend-checks, frontend-checks]
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -62,25 +63,36 @@ jobs:
           cache: npm
           cache-dependency-path: e2e/package-lock.json
 
-      - name: Create env file
-        run: |
-          cat > backend/config/.env.dev << 'EOF'
-          NODE_ENV=dev
-          PORT=3000
-          MONGO_URI=mongodb://mongo-dev:27017/project_yum_recipes
-          EOF
-
       - name: Start Docker stack
-        run: docker compose -f docker-compose.dev.yml up -d --build
+        run: |
+          echo "::group::Docker build + start"
+          docker compose -f docker-compose.ci.yml up -d --build
+          echo "::endgroup::"
 
       - name: Wait for stack to be ready
         run: |
-          echo "Waiting for Nginx on port 80..."
+          echo "::group::Health check"
           for i in $(seq 1 30); do
-            curl -s http://localhost:80 && break
-            echo "Attempt $i failed, retrying..."
-            sleep 3
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/api/recipes)
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ Backend ready (HTTP 200)"
+              echo "::endgroup::"
+              exit 0
+            fi
+            echo "⏳ Attempt $i — HTTP $STATUS, retrying..."
+            sleep 5
           done
+          echo "❌ Backend never became ready — aborting"
+          echo "::endgroup::"
+          docker compose -f docker-compose.ci.yml logs
+          exit 1
+
+      - name: Docker logs
+        if: always()
+        run: |
+          echo "::group::Docker container logs"
+          docker compose -f docker-compose.ci.yml logs
+          echo "::endgroup::"
 
       - name: Install Playwright
         working-directory: e2e
@@ -100,4 +112,4 @@ jobs:
 
       - name: Tear down Docker stack
         if: always()
-        run: docker compose -f docker-compose.dev.yml down
+        run: docker compose -f docker-compose.ci.yml down

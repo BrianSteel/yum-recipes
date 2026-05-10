@@ -1,15 +1,36 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, request } from '@playwright/test';
+
+let recipeId: string;
+
+test.beforeAll(async () => {
+  const api = await request.newContext({ baseURL: 'http://localhost:80' });
+  const res = await api.post('/api/recipes', {
+    data: {
+      name: 'Test Recipe',
+      desc: 'A test recipe for e2e tests',
+      imgPath: 'https://img.chefkoch-cdn.de/rezepte/393031127655461/bilder/1618353/crop-640x427/spaghetti-bolognese.jpg',
+      ingredients: [{ name: 'Ingredient', amount: 1, unit: 'piece' }]
+    }
+  });
+  const { recipe } = await res.json();
+  recipeId = recipe._id;
+  await api.dispose();
+});
+
+test.afterAll(async () => {
+  const api = await request.newContext({ baseURL: 'http://localhost:80' });
+  await api.delete(`/api/recipe/${recipeId}`);
+  await api.dispose();
+});
 
 test.describe('Recipe Detail', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/recipe');
-    await page.waitForSelector('app-recipe-items', { timeout: 10000 });
-    await page.locator('app-recipe-items').first().click();
+    await page.goto('/recipe/0');
     await page.waitForSelector('app-recipe-detail h2', { timeout: 10000 });
   });
 
   test('should display recipe name', async ({ page }) => {
-    await expect(page.locator('app-recipe-detail h2')).not.toBeEmpty();
+    await expect(page.locator('app-recipe-detail h2')).toHaveText('Test Recipe');
   });
 
   test('should display recipe image', async ({ page }) => {
@@ -17,7 +38,7 @@ test.describe('Recipe Detail', () => {
   });
 
   test('should display recipe description', async ({ page }) => {
-    await expect(page.locator('app-recipe-detail p')).not.toBeEmpty();
+    await expect(page.locator('app-recipe-detail p')).toHaveText('A test recipe for e2e tests');
   });
 
   test('should display Manage dropdown button', async ({ page }) => {
