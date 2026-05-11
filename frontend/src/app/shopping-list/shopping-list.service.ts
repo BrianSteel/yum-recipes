@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 
 import { Ingredients } from '../shared/ingredient.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class ShoppingListService {
   constructor(private http: HttpClient) {}
 
   fetchIngredients() {
-    this.http.get<{ message: string, ingredients: any[] }>('/api/shopping-list')
+    this.http.get<{ message: string, ingredients: any[] }>(`${environment.apiUrl}/api/shopping-list`)
       .subscribe(res => {
         this.ingredients = res.ingredients.map(i => new Ingredients(i.name, i.amount, i._id));
         this.changableIngredients.next(this.ingredients.slice());
@@ -33,7 +34,7 @@ export class ShoppingListService {
   }
 
   addIngredient(ingredient: Ingredients) {
-    this.http.post<{ message: string, ingredient: any }>('/api/shopping-list', {
+    this.http.post<{ message: string, ingredient: any }>(`${environment.apiUrl}/api/shopping-list`, {
       name: ingredient.name,
       amount: ingredient.amount
     }).subscribe(res => {
@@ -48,7 +49,7 @@ export class ShoppingListService {
 
   updateIngredient(index: number, newIngredient: Ingredients) {
     const id = this.ingredients[index].id;
-    this.http.put<{ message: string, ingredient: any }>(`/api/shopping-list/${id}`, {
+    this.http.put<{ message: string, ingredient: any }>(`${environment.apiUrl}/api/shopping-list/${id}`, {
       name: newIngredient.name,
       amount: newIngredient.amount
     }).subscribe(res => {
@@ -59,7 +60,7 @@ export class ShoppingListService {
 
   deleteIngredient(index: number) {
     const id = this.ingredients[index].id;
-    this.http.delete(`/api/shopping-list/${id}`).subscribe(() => {
+    this.http.delete(`${environment.apiUrl}/api/shopping-list/${id}`).subscribe(() => {
       this.ingredients.splice(index, 1);
       this.changableIngredients.next(this.ingredients.slice());
     });
