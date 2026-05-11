@@ -41,6 +41,12 @@ docker build -t yum-recipes-frontend:latest -f ./frontend/Dockerfile .
 
 In production (Kubernetes), the built Angular app is served by Nginx inside the container. A custom config (`nginx/frontend.conf`) is required to handle Angular client-side routing — without it, routes like `/shopping-list` return 404.
 
+## Render Deployment
+
+Built with `--configuration production` which swaps `environment.ts` for `environment.prod.ts`. The `apiUrl` in `environment.prod.ts` points to the Render backend URL so Angular knows where to send API calls — there is no Nginx proxy in this setup.
+
+In Docker (dev/CI/K8s) `apiUrl` is `''` so all calls remain relative (`/api/...`) and Nginx handles the proxy as normal.
+
 ## Note on Protractor
 
 The `frontend/e2e/` folder contains the default Angular CLI Protractor boilerplate. It is unused — all e2e tests are in the root `e2e/` folder using Playwright.

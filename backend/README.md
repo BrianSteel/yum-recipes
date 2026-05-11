@@ -26,7 +26,7 @@ backend/
 │   ├── schema.js           — Recipe schema (name, description, imagePath, ingredients)
 │   └── shoppingListSchema.js — Shopping list item schema (name, amount)
 ├── migration-scripts/
-│   ├── seed.js             — Seeds recipes into MongoDB
+│   ├── seed-recipes.js             — Seeds recipes into MongoDB
 │   └── seed-shopping-list.js — Seeds shopping list items into MongoDB
 ├── config/
 │   ├── .env.dev
@@ -78,7 +78,7 @@ npm run seed
 npm run seed:shopping-list
 
 # Via Kubernetes
-kubectl exec -n yum-recipes deployment/backend -- node migration-scripts/seed.js
+kubectl exec -n yum-recipes deployment/backend -- node migration-scripts/seed-recipes.js
 kubectl exec -n yum-recipes deployment/backend -- node migration-scripts/seed-shopping-list.js
 ```
 

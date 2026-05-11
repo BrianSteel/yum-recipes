@@ -196,7 +196,7 @@ kubectl logs <pod-name> -n yum-recipes
 kubectl exec -it <pod-name> -n yum-recipes -- sh
 
 # Seed database manually
-kubectl exec -n yum-recipes deployment/backend -- node migration-scripts/seed.js
+kubectl exec -n yum-recipes deployment/backend -- node migration-scripts/seed-recipes.js
 kubectl exec -n yum-recipes deployment/backend -- node migration-scripts/seed-shopping-list.js
 
 # Delete cluster

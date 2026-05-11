@@ -1,8 +1,15 @@
 # Yum Recipes
 
-This branch tests the ci
+<p align="center">
+  <img src="resources/preview.png" width="1000" alt="App Preview" />
+</p>
 
-A portfolio project that simulates how I work in production. The domain is intentionally simple (a recipe app) so the focus stays on the engineering practices rather than business logic — the same patterns, tooling and workflows I use day-to-day on real systems.
+<p align="center">
+  <a href="https://yum-recipes-frontend.onrender.com">🔗 Live Demo</a> &nbsp;|&nbsp;
+  <a href="https://yum-recipes.onrender.com/api/recipes">🔗 API</a>
+</p>
+
+Production-grade engineering practices on a simple recipe app. The domain is intentionally simple (a recipe app) so the focus stays on the engineering practices rather than business logic — the same patterns, tooling and workflows I use day-to-day on real systems.
 
 **This is not a demo or toy app** — it reflects my actual working approach:
 - Containerisation with Docker and Docker Compose
@@ -11,7 +18,7 @@ A portfolio project that simulates how I work in production. The domain is inten
 - Automated testing at unit, e2e and performance levels
 - Infrastructure-as-code for all environments
 
-In production I work with Google Cloud (GKE, Cloud Run, etc.). For this simulation, Render and Vercel stand in as the deployment targets to keep the setup self-contained and free — the CI/CD pipeline structure, branching strategy and workflow are the same regardless of where it deploys.
+In production I work with Google Cloud (GKE, Cloud Run, etc.). For this simulation, Render stands in as the deployment target to keep the setup self-contained and free — the CI/CD pipeline structure, branching strategy and workflow are the same regardless of where it deploys.
 
 Intentionally out of scope (not because I haven't done it, but because it would add noise without adding signal here):
 - Monitoring / observability (Prometheus, Grafana)
@@ -19,6 +26,14 @@ Intentionally out of scope (not because I haven't done it, but because it would 
 - Authentication / RBAC
 - Rate limiting
 - HTTPS / TLS certificates
+
+---
+
+## Architecture
+
+<p align="center">
+  <img src="resources/project-overview.png" width="1000" alt="Project Overview" />
+</p>
 
 ---
 
@@ -33,40 +48,7 @@ Intentionally out of scope (not because I haven't done it, but because it would 
 | Containerisation | Docker + Docker Compose |
 | Orchestration | Kubernetes (K3d / K3s) |
 | CI | GitHub Actions |
-| CD | Render (backend) + Vercel (frontend) |
-
----
-
-## Architecture
-
-### Docker Compose
-
-```
-localhost:80
-      ↓
-   Nginx (reverse proxy + load balancer)
-   ↓                         ↓
-/api                         /
-   ↓                         ↓
-Backend x3 replicas      Frontend (Angular dev server)
-   ↓
-MongoDB
-```
-
-### Kubernetes (K3d)
-
-```
-localhost:80
-      ↓
-   Ingress Controller (Traefik or Nginx)
-   ↓                         ↓
-/api                         /
-   ↓                         ↓
-Backend pods (x1 dev,    Frontend pod (Nginx serving built Angular)
- x3 prod)
-   ↓
-MongoDB pod + PersistentVolumeClaim
-```
+| CD | Render (frontend + backend) |
 
 ---
 
@@ -86,7 +68,7 @@ For Kubernetes:
 
 ```bash
 npm run docker:dev
-npm run seed
+npm run seed:recipes
 npm run seed:shopping-list
 ```
 
@@ -112,7 +94,7 @@ App runs at http://localhost:80
 | `npm run docker:dev:down` | Stop dev stack |
 | `npm run docker:dev:restart` | Restart dev stack |
 | `npm run docker:scale` | Start with 3 backend replicas |
-| `npm run seed` | Seed recipes |
+| `npm run seed:recipes` | Seed recipes |
 | `npm run seed:shopping-list` | Seed shopping list |
 | `npm run install:all` | Install all dependencies (backend, frontend, e2e, perf) |
 
@@ -157,7 +139,7 @@ For full control use the scripts directly — see [k8s/README.md](k8s/README.md)
 ```
 ├── backend/
 │   ├── config/            .env.dev, .env.test, .env.prod, .env.example
-│   ├── migration-scripts/ seed.js, seed-shopping-list.js
+│   ├── migration-scripts/ seed-recipes.js, seed-shopping-list.js
 │   ├── models/            schema.js, shoppingListSchema.js
 │   ├── tests/             recipes.test.js (Jest + Supertest)
 │   ├── app.js             Express routes
@@ -213,13 +195,21 @@ Local K8s setup using K3d (K3s inside Docker). Supports both Traefik and Nginx i
 
 See [k8s/README.md](k8s/README.md) for full Kubernetes docs.
 
+> K8s deploy scripts are for local K3d only. For cloud K8s (EKS, GKE, AKS), use GitHub Actions CD or ArgoCD. For edge devices, use K3s directly.
+
 ---
 
 ## CI/CD
 
 **`ci.yml`** — runs on every PR (any branch): Jest tests, frontend build, Playwright e2e
 
-**`deploy.yml`** — runs on merge into `ganymed`: deploys backend to Render, frontend to Vercel
+Render auto-deploys on push to `master` via its GitHub integration — no deploy workflow needed.
+
+<p align="center">
+  <img src="resources/ci-1.png" width="440" alt="CI Workflow Runs" />
+  &nbsp;
+  <img src="resources/ci-2.png" width="440" alt="CI Pipeline Detail" />
+</p>
 
 > K8s deploy scripts are for local K3d only. For cloud K8s (EKS, GKE, AKS), use GitHub Actions CD or ArgoCD. For edge devices, use K3s directly.
 
@@ -236,12 +226,16 @@ The report includes per-test pass/fail status, screenshots on failure, and trace
 
 ### Required Secrets
 
-| Secret | Where |
+None — Render auto-deploys on push to `master` via GitHub integration.
+
+---
+
+## Live Demo
+
+| | URL |
 |---|---|
-| `RENDER_DEPLOY_HOOK_URL` | Render → your service → Deploy Hook |
-| `VERCEL_TOKEN` | Vercel → Settings → Tokens |
-| `VERCEL_ORG_ID` | Vercel → Settings → General |
-| `VERCEL_PROJECT_ID` | Vercel → your project → Settings |
+| Frontend | https://yum-recipes-frontend.onrender.com |
+| Backend API | https://yum-recipes.onrender.com/api/recipes |
 
 ---
 
@@ -249,16 +243,18 @@ The report includes per-test pass/fail status, screenshots on failure, and trace
 
 | Layer | Service |
 |---|---|
-| Frontend | Vercel |
-| Backend | Render |
-| Database | MongoDB Atlas |
+| Frontend | Render (Static Site) |
+| Backend | Render (Web Service) |
+| Database | MongoDB Atlas (M0 free tier) |
+
+Auto-deploys on every push to `master` — frontend redeploys only when `frontend/` changes, backend only when `backend/` changes (configured via Render Build Filters).
+
+> Free tier backend spins down after 15 minutes of inactivity. First request after idle takes ~30s (cold start).
 
 ---
 
 ## Branching Strategy
 
-```
-feature/xxx  →  PR (any branch)  →  tests run
-                     ↓
-             PR into ganymed  →  full CI  →  merge  →  deploy
-```
+<p align="center">
+  <img src="resources/branching-strategy.png" width="900" alt="Branching Strategy" />
+</p>
