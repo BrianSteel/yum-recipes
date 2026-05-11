@@ -170,7 +170,8 @@ For full control use the scripts directly — see [k8s/README.md](k8s/README.md)
 ├── e2e/                   Playwright tests
 ├── perf/                  Performance tests (autocannon)
 ├── nginx/
-│   ├── nginx.conf         Reverse proxy for Docker Compose
+│   ├── nginx.dev.conf     Reverse proxy for Docker Compose dev (proxies to ng serve on port 4200)
+│   ├── nginx.ci.conf      Reverse proxy for Docker Compose CI/prod (proxies to Nginx on port 80)
 │   └── frontend.conf      Static file server for K8s frontend pod
 ├── k8s/
 │   ├── scripts/           Deploy scripts (Traefik + Nginx variants)
@@ -200,6 +201,9 @@ For full control use the scripts directly — see [k8s/README.md](k8s/README.md)
 |---|---|
 | `docker-compose.dev.yml` | Dev — live mounts, ports exposed, Node 16 frontend |
 | `docker-compose.prod.yml` | Prod demo — baked images, port 80 only |
+| `docker-compose.ci.yml` | CI — production images, no bind mounts, used by GitHub Actions |
+
+> `docker-compose.dev.yml` uses bind mounts (`./frontend:/app`) for live code reload. This requires an anonymous volume on `/app/node_modules` to protect the container's Linux node_modules from being overwritten by the local macOS ones at runtime. CI uses `docker-compose.ci.yml` which builds clean images with no mounts — this problem doesn't exist there.
 
 ---
 
@@ -218,6 +222,17 @@ See [k8s/README.md](k8s/README.md) for full Kubernetes docs.
 **`deploy.yml`** — runs on merge into `ganymed`: deploys backend to Render, frontend to Vercel
 
 > K8s deploy scripts are for local K3d only. For cloud K8s (EKS, GKE, AKS), use GitHub Actions CD or ArgoCD. For edge devices, use K3s directly.
+
+### Playwright Report
+
+After each CI run, the Playwright HTML report is uploaded as a GitHub Actions artifact named `playwright-report`. To view it:
+
+1. Go to the Actions tab on GitHub
+2. Click the relevant workflow run
+3. Download `playwright-report` from the Artifacts section
+4. Extract the zip and open `index.html` in a browser
+
+The report includes per-test pass/fail status, screenshots on failure, and traces for retried tests.
 
 ### Required Secrets
 

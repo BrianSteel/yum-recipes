@@ -72,14 +72,24 @@ jobs:
       - name: Wait for stack to be ready
         run: |
           echo "::group::Health check"
+          # retry up to 30 times (5s apart = 2.5 min max). first attempt may fail while containers are still starting up — that's fine
+          # require REQUIRED_CONSECUTIVE 200s in a row to confirm the stack is stable, not just briefly up
+          REQUIRED_CONSECUTIVE=2
+          CONSECUTIVE=0
           for i in $(seq 1 30); do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/api/recipes)
             if [ "$STATUS" = "200" ]; then
-              echo "✅ Backend ready (HTTP 200)"
-              echo "::endgroup::"
-              exit 0
+              CONSECUTIVE=$((CONSECUTIVE + 1))
+              echo "✅ Got 200 ($CONSECUTIVE/$REQUIRED_CONSECUTIVE)"
+              if [ "$CONSECUTIVE" = "$REQUIRED_CONSECUTIVE" ]; then
+                echo "✅ Backend stable ($REQUIRED_CONSECUTIVE consecutive 200s)"
+                echo "::endgroup::"
+                exit 0
+              fi
+            else
+              CONSECUTIVE=0
+              echo "⏳ Attempt $i — HTTP $STATUS, retrying..."
             fi
-            echo "⏳ Attempt $i — HTTP $STATUS, retrying..."
             sleep 5
           done
           echo "❌ Backend never became ready — aborting"

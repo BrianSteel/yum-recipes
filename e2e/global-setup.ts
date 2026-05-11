@@ -1,7 +1,8 @@
-import { request } from '@playwright/test';
+import { request, FullConfig } from '@playwright/test';
 
-async function globalSetup() {
-    const api = await request.newContext({ baseURL: 'http://localhost:80' });
+async function globalSetup(config: FullConfig) {
+    const { baseURL } = config.projects[0].use;
+    const api = await request.newContext({ baseURL });
 
     // clear all recipes
     const recipesRes = await api.get('/api/recipes');
